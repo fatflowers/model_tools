@@ -24,17 +24,19 @@ if fid <= 0
     error('Failed open file');
 end
 
-fwrite(fid, type, 'int');
+fwrite(fid, type, 'int', 0, 'b');
 
-fwrite(fid, size(image, 1), 'int');
-fwrite(fid, size(image, 2), 'int');
+fwrite(fid, size(image, 1), 'int', 0, 'b');
+fwrite(fid, size(image, 2), 'int', 0, 'b');
 
 for i = 1: size(image, 1)
-    if fwrite(fid, image(i, :), 'uchar') ~= size(image, 2)
+    if fwrite(fid, image(i, :), 'uchar', 0, 'b') ~= size(image, 2)
         error(['failed to write the ' num2str(i) 'th row']);
     end
 end
         
 fprintf('Finished.\n');
+
+fclose(fid);
 
 
