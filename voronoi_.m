@@ -7,10 +7,14 @@
 %%
 I_width = 700;
 I_height = 700;
-R_vertices = [VarName1, VarName2];
-[V, C] = voronoin(R_vertices);
+R_vertices = [VarName1, VarName2, VarName3];
+[V, C] = voronoin([R_vertices(:, 1), R_vertices(:, 2)]);
 V(1,:)=[I_width, I_height];
 voronoi_map = zeros(I_width, I_height);
+
+% voronoi_depth_map a depth for a voronoi region
+voronoi_depth_map = zeros(I_width, I_height);
+
 
 for i_C = 1 : length(C)
     if all(C{i_C}) ~= 1
@@ -60,6 +64,7 @@ for i_C = 1 : length(C)
                    continue;
                end
                voronoi_map(x_y(i, 1), x_y(i, 2)) = i_C;
+               voronoi_depth_map(x_y(i, 1), x_y(i, 2)) = R_vertices(i_C, 3);
            end
 
     %        if ON(i) == 1 && voronoi_map(x_y(i, 1), x_y(i, 2)) == 0
