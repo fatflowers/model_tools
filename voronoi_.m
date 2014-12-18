@@ -17,7 +17,7 @@ voronoi_depth_map = zeros(I_width, I_height);
 
 
 for i_C = 1 : length(C)
-    if all(C{i_C}) ~= 1
+    if all(C{i_C}) == 1
        xv_yv = zeros(length(C{i_C}), 2);
        % put all the points indexed by C{i_C} into x_y
        for i_i_C = 1 : length(C{i_C})
@@ -28,22 +28,26 @@ for i_C = 1 : length(C)
     %    min_x = min(int32(xv_yv(:, 1))) - 1;
        min_x = min(int32(xv_yv(:, 1)));
        if min_x < 0
-           min_x = 1;
+           continue;
+%            min_x = 1;
        end
     %    max_x = max(int32(xv_yv(:, 1))) + 1;
        max_x = max(int32(xv_yv(:, 1)));
        if max_x > I_height
-           max_x = I_height;
+           continue;
+%            max_x = I_height;
        end
        min_y = min(int32(xv_yv(:, 2)));
     %    min_y = min(int32(xv_yv(:, 2))) - 1;
        if min_y < 0
-           min_y = 1;
+           continue;
+%            min_y = 1;
        end
        max_y = max(int32(xv_yv(:, 2)));
     %    max_y = max(int32(xv_yv(:, 2))) + 1;
        if max_y > I_width
-           max_y = I_width;
+           continue;
+%            max_y = I_width;
        end
 
        x_y = zeros((max_x - min_x + 1) * (max_y - min_y + 1), 2);
