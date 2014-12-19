@@ -7,7 +7,12 @@
 %%
 I_width = 700;
 I_height = 700;
-R_vertices = [VarName1, VarName2, VarName3];
+% depth of 3D model 
+R_vertices = [VarName4, VarName5, VarName6];
+% normalization
+[R_depth, PS_3D] = mapminmax(R_vertices(:, 3)', 0, 1);
+R_vertices(:, 3) = R_depth';
+
 [V, C] = voronoin([R_vertices(:, 1), R_vertices(:, 2)]);
 V(1,:)=[I_width, I_height];
 voronoi_map = zeros(I_width, I_height);
