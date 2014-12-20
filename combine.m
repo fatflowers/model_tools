@@ -38,8 +38,8 @@ end
             
 
 %两种深度图的FFT
-fft_ss = fft(depth_ss);
-fft_st = fft(voronoi_depth_map);
+fft_ss = fft2(depth_ssf);
+fft_st = fft2(voronoi_depth_map);
 
 %shape from shading的频率域实部与虚部
 real_ss = real(fft_ss);
@@ -50,11 +50,11 @@ real_st = real(fft_st);
 imag_st = imag(fft_st);
 
 %融合后的结果
-real_combine = zeros(1, size * size);
-imag_combine = zeros(1, size * size);
+real_combine = zeros(size, size);
+imag_combine = zeros(size, size);
 
 %深度图外面两圈的值设为0
-for i = i: size
+for i = 1: size
     for j = 1: size
         if j < 3 || j > size - 3 || i < 3 || i > size - 3
             real_ss(i, j) = 0;
@@ -82,7 +82,7 @@ for i = 1: size
     end
 end
 
-depth_combine = ifft(real_combine + imag_combine*i);
+depth_combine = ifft2(real_combine + imag_combine*1i);
 % Normalize(depth_combine, voronoi_depth_map, 1, size);
 
 % plot_3d(real(depth_combine));
@@ -92,8 +92,8 @@ depth_combine = ifft(real_combine + imag_combine*i);
 count_vertices = zeros(size(R_vertices, 1), 1);
 mean_vertices = zeros(size(R_vertices, 1), 1);
 
-for i = 1: I_height
-    for j = 1: I_width
+for i = 1: size
+    for j = 1: size
         if voronoi_map(i, j) ~= 0
             mean_vertices(voronoi_map(i, j)) = mean_vertices(voronoi_map(i, j)) + depth_combine(i, j);
             count_vertices(voronoi_map(i, j)) = count_vertices(voronoi_map(i, j)) + 1;
