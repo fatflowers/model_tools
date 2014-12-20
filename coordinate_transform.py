@@ -1,5 +1,6 @@
 import pickle
 
+
 def coordinate_transform(input_file, output_file='depth_map.depth'):
     lines = open(input_file)
     if lines is None:
@@ -28,8 +29,8 @@ def coordinate_transform(input_file, output_file='depth_map.depth'):
         # coors[2] = 2.0 / 3.0 * (coors[2] - 10)
 
         # xs = (Ws - 1.0) * (coors[0] / Wp + 0.5)
-        xs = (Ws - 1.0) * (coors[0]*2 / Wp + 0.5) + 1
-        ys = (Hs - 1.0) * (coors[1]*2 / Hp + 0.5) + 1
+        xs = (Ws - 1.0) * (coors[0] * 2 / Wp + 0.5) + 1
+        ys = (Hs - 1.0) * (coors[1] * 2 / Hp + 0.5) + 1
 
         output.write('%d ' % ys + '%d ' % xs + '%.6f' % coors[2] + '\n')
         coor_dict_x[int(xs)] = x
