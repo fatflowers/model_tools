@@ -1,8 +1,8 @@
 %实现【integration of shape from shading and stereo】中的融合算法
-function [depth_combine] = combine(voronoi_depth_map, SSFpath, size)
+function combine(R_vertices, voronoi_map, voronoi_depth_map, PS_3D, SSFpath, size)
 % voronoi_depth_map
 %深度图为256 X 256大小
-if nargin() == 1
+if nargin() == 4
     SSFpath = 'LRos1.depth';
     size = 728;
 end
@@ -86,6 +86,25 @@ depth_combine = ifft(real_combine + imag_combine*i);
 % Normalize(depth_combine, voronoi_depth_map, 1, size);
 
 % plot_3d(real(depth_combine));
+
+% compute the mean value of depth after fusion for each Radar node.
+
+count_vertices = zeros(size(R_vertices, 1), 1);
+mean_vertices = zeros(size(R_vertices, 1), 1);
+
+for i = 1: I_height
+    for j = 1: I_width
+        if voronoi_map(i, j) ~= 0
+            mean_vertices(voronoi_map(i, j)) = mean_vertices(voronoi_map(i, j)) + depth_combine(i, j);
+            count_vertices(voronoi_map(i, j)) = count_vertices(voronoi_map(i, j)) + 1;
+        end
+    end
+end
+% write the combined depth into file depth_combined.tmp, which to be used
+% in python
+
+dlmwrite('depth_combined.tmp', num2str(mapminmax('reverse', (mean_vertices./count_vertices)', PS_3D)', '%3.6f\n'));
+
 
 
 

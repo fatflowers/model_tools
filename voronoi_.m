@@ -1,14 +1,17 @@
 %% 
 % 对于VarName1, VarName2点，求泰森多边形
-% 之后对于每一个泰森多边形i_C，将图像上对应区域的点标为i_C
-% 
-
+% 之后在voronoi_map中，对于每一个泰森多边形i_C，将图像上对应区域的点标为i_C
+% voronoi_depth_map根据区域为每个矩阵中的点赋深度值，每个区域的深度值根据voronoi_map的区域划分且相同
+function [voronoi_map, voronoi_depth_map, PS_3D] = voronoi_(R_vertices, I_width, I_height)
 
 %%
-I_width = 700;
-I_height = 700;
-% depth of 3D model 
-R_vertices = [VarName4, VarName5, VarName6];
+if nargin() == 1
+    I_width = 700;
+    I_height = 700;
+    % depth of 3D model 
+    % R_vertices = [VarName4, VarName5, VarName6];
+end
+
 % normalization
 [R_depth, PS_3D] = mapminmax(R_vertices(:, 3)', 0, 1);
 R_vertices(:, 3) = R_depth';
