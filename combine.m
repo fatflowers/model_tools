@@ -1,10 +1,10 @@
 %实现【integration of shape from shading and stereo】中的融合算法
-function combine(R_vertices, voronoi_map, voronoi_depth_map, PS_3D, SSFpath, size)
+function [result] = combine(R_vertices, voronoi_map, voronoi_depth_map, PS_3D, SSFpath, size)
 % voronoi_depth_map
 %深度图为256 X 256大小
 if nargin() == 4
-    SSFpath = 'LRos1.depth';
-    size = 728;
+    SSFpath = 'lros12-21-2.ucf';
+    size = 700;
 end
 
 a = 0.01;
@@ -82,16 +82,17 @@ for i = 1: size
     end
 end
 
-depth_combine = ifft2(real_combine + imag_combine*1i);
+depth_combine = real(ifft2(real_combine + imag_combine*1i));
 % Normalize(depth_combine, voronoi_depth_map, 1, size);
 
 % plot_3d(real(depth_combine));
 
 % compute the mean value of depth after fusion for each Radar node.
 
-count_vertices = zeros(size(R_vertices, 1), 1);
-mean_vertices = zeros(size(R_vertices, 1), 1);
-
+% count_vertices = zeros(length(R_vertices, 1), 1);
+% mean_vertices = zeros(length(R_vertices, 1), 1);
+count_vertices = zeros(length(R_vertices), 1);
+mean_vertices = zeros(length(R_vertices), 1);
 for i = 1: size
     for j = 1: size
         if voronoi_map(i, j) ~= 0
@@ -103,7 +104,25 @@ end
 % write the combined depth into file depth_combined.tmp, which to be used
 % in python
 
-dlmwrite('depth_combined.tmp', num2str(mapminmax('reverse', (mean_vertices./count_vertices)', PS_3D)', '%3.6f\n'));
+% avoid 0 be diveded
+zero_flag = zeros(length(R_vertices), 1);
+for i = 1: length(count_vertices)
+    if count_vertices(i) == 0
+        zero_flag(i) = 1;
+        count_vertices(i) = 1;
+        mean_vertices(i) = 0;
+    end
+end
+
+% dlmwrite('depth_combined.tmp', num2str(mapminmax('reverse', (mean_vertices./count_vertices)', PS_3D)', '%3.6f\n'));
+% dlmwrite('depth_combined.tmp', num2str(mapminmax('reverse', (mean_vertices./count_vertices)', PS_3D)', '%3.6f\n'), '');
+result = mapminmax((mean_vertices./count_vertices)', 0.0099, 0.9698)';
+for i = 1:length(zero_flag)
+    if zero_flag(i) == 1
+        result(i) = 0;
+    end
+end
+dlmwrite('depth_combined.tmp', result, '%3.6f\n', '');
 
 
 

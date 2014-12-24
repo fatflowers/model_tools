@@ -67,7 +67,7 @@ def cut_radar_model(input_file='model_rotated.obj', output_file='model_cut.obj')
         assert 'Failed to open file: ' + output_file + '\n'
 
     for line in lines:
-        if line[0] == 'v' and float(line[2:].split(' ')[2]) > 0:
+        if line[0] == 'v' and float(line[2:].split(' ')[2]) < 0:
             # output.write(rotate(line[2:]) + '\n')
             output.write(line[2:])
         # elif line[0] == 'f':
@@ -91,8 +91,8 @@ def coordinate_transform(input_file='model_cut.obj', output_file='depth_map.dept
 
     Wp = 2.0
     Hp = 2.0
-    Ws = 728.0
-    Hs = 728.0
+    Ws = 700.0
+    Hs = 700.0
 
     # coordinate dictionary, input an image coordinate, output a 3D x-y coordinate
     coor_dict_x = {}
@@ -147,12 +147,23 @@ def modify_3Dmodel(input_file='model_rotated.obj', depth_file='depth_combined.tm
 
     print 'Start to modify the model' + input_file + ' & write to' + output_file + '...'
 
-
+    count = 0
     for line in lines:
-        if line[0] == 'v' and float(line[2:].split(' ')[2]) > 0:
-            output.write(line[:line.rfind(' ') + 1] + '%.6f' % float(depth.readline()) + '\n')
+        if line[0] == 'v' and float(line[2:].split(' ')[2]) < 0:
+            # avoid depth being zero
+            depth_line = float(depth.readline())
+            if depth_line < 0:
+                output.write(line[:line.rfind(' ') + 1] + '%.6f' % (depth_line) + '\n')
+                depth_temp = depth_line
+                # print line
+                # print line[:line.rfind(' ') + 1] + '%.6f' % (depth_line)
+            else:
+                # output.write(line[:line.rfind(' ') + 1] + '%.6f' % (0.0) + '\n')
+                output.write(line)
+                count += 1
         else:
             output.write(line)
+    print count
 
     output.close()
     depth.close()
@@ -184,8 +195,8 @@ def start_matlab_command():
 
 
 if __name__ == "__main__":
-    rotate_radar_model()
-    cut_radar_model()
-    coordinate_transform()
-    subprocess.Popen(start_matlab_command())
+    # rotate_radar_model()
+    # cut_radar_model()
+    # coordinate_transform()
+    # subprocess.Popen(start_matlab_command())
     modify_3Dmodel()

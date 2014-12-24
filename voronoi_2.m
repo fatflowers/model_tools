@@ -11,7 +11,7 @@ if nargin() == 1
     % depth of 3D model 
     % R_vertices = [VarName4, VarName5, VarName6];
 end
-
+[IN_radar, out_rect] = get_radar_bound(I_width, I_height, R_vertices);
 % normalization
 [R_depth, PS_3D] = mapminmax(R_vertices(:, 3)', 0.0099, 0.9698);
 % R_vertices(:, 3) = R_depth';
@@ -36,26 +36,26 @@ for i_C = 1 : length(C)
     %    min_x = min(int32(xv_yv(:, 1))) - 1;
        min_x = min(int32(xv_yv(:, 1)));
        if min_x < 0
-           continue;
-%            min_x = 1;
+%            continue;
+           min_x = 1;
        end
     %    max_x = max(int32(xv_yv(:, 1))) + 1;
        max_x = max(int32(xv_yv(:, 1)));
        if max_x > I_height
-           continue;
-%            max_x = I_height;
+%            continue;
+           max_x = I_height;
        end
        min_y = min(int32(xv_yv(:, 2)));
     %    min_y = min(int32(xv_yv(:, 2))) - 1;
        if min_y < 0
-           continue;
-%            min_y = 1;
+%            continue;
+           min_y = 1;
        end
        max_y = max(int32(xv_yv(:, 2)));
     %    max_y = max(int32(xv_yv(:, 2))) + 1;
        if max_y > I_width
-           continue;
-%            max_y = I_width;
+%            continue;
+           max_y = I_width;
        end
 
        x_y = zeros((max_x - min_x + 1) * (max_y - min_y + 1), 2);
@@ -68,9 +68,9 @@ for i_C = 1 : length(C)
        end
 
     %   [IN, ON] = inpolygon(x_y(:, 1), x_y(:, 2), xv_yv(:, 1), xv_yv(:, 2));
-       IN = inpolygon(x_y(:, 1), x_y(:, 2), xv_yv(:, 1), xv_yv(:, 2));  
+       IN = myinpolygon(x_y(:, 1), x_y(:, 2), xv_yv(:, 1), xv_yv(:, 2));  
        for i = 1 : length(IN)
-           if IN(i) == 1
+           if IN(i) == 1 && IN_radar((x_y(i, 1) - 1)*I_width + x_y(i, 2)) ~= 0
                if voronoi_map(x_y(i, 1), x_y(i, 2)) ~= 0
                    % this vertice is on the edge of voronoi, take a rand to
                    % add it.
